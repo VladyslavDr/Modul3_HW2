@@ -14,13 +14,13 @@ namespace Contacts.Services
         where T : IContactModel
     {
         private static ContactLogService<T> _instance;
-        private static CultureInfo _myCulture;
         private ContactLogModel<T> _contactLog;
+        private Alphabet _alphabetUS = new Alphabet("alphabetUS.json");
+        private Alphabet _alphabetUK = new Alphabet("alphabetUA.json");
 
         private ContactLogService()
         {
             _contactLog = new ContactLogModel<T>();
-            _myCulture = new CultureInfo("en-US");
         }
 
         public static ContactLogService<T> GetInstance()
@@ -33,15 +33,9 @@ namespace Contacts.Services
             return _instance;
         }
 
-        public static ContactLogService<T> GetInstance(CultureInfo culture)
-        {
-            _myCulture = culture;
-            return GetInstance();
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetGenericEnumerator();
         }
 
         public bool Add(T contact)
@@ -58,6 +52,56 @@ namespace Contacts.Services
             if (isNumber)
             {
                 _contactLog.Digitals.Add(contact);
+            }
+
+            if (CultureInfo.CurrentUICulture.Name.Equals("en-US"))
+            {
+                var isLatinLetter = false;
+
+                foreach (var letterFullName in contact.FullName)
+                {
+                    foreach (var letterAlphabet in _alphabetUS.GetAlphabet)
+                    {
+                        if (letterAlphabet.Equals(letterFullName))
+                        {
+                            isLatinLetter = true;
+                        }
+                    }
+                }
+
+                if (isLatinLetter)
+                {
+                    _contactLog.Default.Add(contact);
+                }
+                else
+                {
+                    _contactLog.Others.Add(contact);
+                }
+            }
+
+            if (CultureInfo.CurrentUICulture.Name.Equals("uk-UA"))
+            {
+                var isCyrillicLetter = false;
+
+                foreach (var letterFullName in contact.FullName)
+                {
+                    foreach (var letterAlphabet in _alphabetUK.GetAlphabet)
+                    {
+                        if (letterAlphabet.Equals(letterFullName))
+                        {
+                            isCyrillicLetter = true;
+                        }
+                    }
+                }
+
+                if (isCyrillicLetter)
+                {
+                    _contactLog.Default.Add(contact);
+                }
+                else
+                {
+                    _contactLog.Others.Add(contact);
+                }
             }
 
             return true;
@@ -81,7 +125,18 @@ namespace Contacts.Services
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetGenericEnumerator();
+        }
+
+        private IEnumerator<T> GetGenericEnumerator()
+        {
+            foreach (var contacts in _contactLog.Contacts)
+            {
+                foreach (var contact in contacts)
+                {
+                    yield return contact;
+                }
+            }
         }
     }
 }

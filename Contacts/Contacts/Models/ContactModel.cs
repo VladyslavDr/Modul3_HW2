@@ -19,7 +19,7 @@ namespace Contacts.Models
                 }
                 else
                 {
-                    return FirstName + LastName;
+                    return (FirstName + LastName).ToLower();
                 }
             }
         }

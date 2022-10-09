@@ -11,10 +11,6 @@ namespace Contacts
 {
     public class Starter
     {
-        private CultureInfo _cultureUS = new CultureInfo("en-US");
-
-        private CultureInfo _cultureRU = new CultureInfo("ru-RU");
-
         public void Run()
         {
             var contact1 = new ContactModel()
@@ -54,15 +50,7 @@ namespace Contacts
                 PhoneNumber = "+380995886300"
             };
 
-            var contactLogService = ContactLogService<ContactModel>.GetInstance(_cultureUS);
-
-            var culture = new CultureInfo("test");
-            if (culture.Name.Equals(_cultureUS.Name))
-            {
-                Console.WriteLine("true");
-            }
-
-            // contactLogService.Add(contact1);
+            var contactLogService = ContactLogService<ContactModel>.GetInstance();
         }
     }
 }
