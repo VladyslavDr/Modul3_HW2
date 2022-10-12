@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
-using Contacts.Services;
-using Contacts.Models;
 
 namespace Contacts
 {
@@ -13,44 +7,61 @@ namespace Contacts
     {
         public void Run()
         {
-            var contact1 = new ContactModel()
+            var contact1 = new Contact()
             {
-                FirstName = "Vlad",
-                LastName = "Dryshliak",
+                FirstName = "алиса",
+                LastName = "ворон",
                 PhoneNumber = "+380664666426"
             };
 
-            var contact2 = new ContactModel()
+            var contact2 = new Contact()
             {
-                FirstName = "Oleg",
-                PhoneNumber = "+380668596428"
+                FirstName = "vlad",
+                PhoneNumber = "+380664666425"
             };
 
-            var contact3 = new ContactModel()
+            var contact3 = new Contact()
             {
-                PhoneNumber = "+380993221712"
+                FirstName = "alex",
+                PhoneNumber = "+380664666411"
             };
 
-            var contact4 = new ContactModel()
+            var contact4 = new Contact()
             {
-                FirstName = "Vlad",
-                LastName = "Dryshliak",
-                PhoneNumber = "+380664666426"
+                FirstName = "5alex",
+                PhoneNumber = "+380664666470"
             };
 
-            var contact5 = new ContactModel()
+            var contact5 = new Contact()
             {
-                LastName = "Шишов",
-                PhoneNumber = "+380958787933"
+                FirstName = "89alex",
+                PhoneNumber = "+380664666488"
             };
 
-            var contact6 = new ContactModel()
+            var contact6 = new Contact()
             {
-                FirstName = "6300",
-                PhoneNumber = "+380995886300"
+                FirstName = "tomas",
+                PhoneNumber = "+380664666499"
             };
+            var contactLog = new ContactList();
 
-            var contactLogService = ContactLogService<ContactModel>.GetInstance();
+            contactLog.Add(contact1);
+            contactLog.Add(contact2);
+            contactLog.Add(contact2);
+            contactLog.Add(contact2);
+            contactLog.Add(contact2);
+            contactLog.Add(contact3);
+            contactLog.Add(contact4);
+            contactLog.Add(contact5);
+            contactLog.Add(contact6);
+
+            contactLog.Remove(contact1);
+            contactLog.Remove(contact5);
+
+            foreach (var item in contactLog)
+            {
+                Console.WriteLine($"{item.FirstName} {item.LastName}: {item.PhoneNumber}");
+            }
         }
     }
 }

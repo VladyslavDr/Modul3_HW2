@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Contacts.Models.Abstractions;
 
-namespace Contacts.Models
+namespace Contacts
 {
-    public class ContactModel : IContactModel
+    public class Contact : IContact
     {
         public string FullName
         {
