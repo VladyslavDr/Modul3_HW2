@@ -3,14 +3,14 @@ using Newtonsoft.Json;
 
 namespace Contacts
 {
-    public class Alphabet
+    public class Regular
     {
-        public Alphabet(string file)
+        public Regular(string file)
         {
-            GetAlphabet = DeserializeAlphabet(file);
+            GetRegular = DeserializeAlphabet(file);
         }
 
-        public string GetAlphabet { get; init; }
+        public string GetRegular { get; init; }
 
         private string DeserializeAlphabet(string file)
         {

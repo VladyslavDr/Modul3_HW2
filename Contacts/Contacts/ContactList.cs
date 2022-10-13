@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Contacts
 {
@@ -14,8 +15,9 @@ namespace Contacts
         private List<IContact> _default;
         private List<IContact> _digitals;
         private List<IContact> _sharp;
-        private Alphabet _alphabetUS = new Alphabet("alphabetUS.json");
-        private Alphabet _alphabetUK = new Alphabet("alphabetUK.json");
+        private Regular _regularUA = new Regular("RegularUA.json");
+        private Regular _regularUS = new Regular("RegularUS.json");
+
         public ContactList()
         {
             _contacts = new List<List<IContact>>();
@@ -49,13 +51,11 @@ namespace Contacts
 
             if (CultureInfo.CurrentUICulture.Name.Equals("uk-UA"))
             {
-                AddToAppropriateList(_alphabetUK, contact);
-
+                AddToAppropriateList(_regularUA, contact);
                 return true;
             }
 
-            AddToAppropriateList(_alphabetUS, contact);
-
+            AddToAppropriateList(_regularUS, contact);
             return true;
         }
 
@@ -117,18 +117,18 @@ namespace Contacts
             return GetGenericEnumerator();
         }
 
-        private void AddToAppropriateList(Alphabet alphabet, IContact contact)
+        private void AddToAppropriateList(Regular regular, IContact contact)
         {
             string str = string.Empty;
 
-            for (int i = 0; i < contact.FullName.Length; i++)
+            Regex regex = new Regex(regular.GetRegular);
+            MatchCollection matches = regex.Matches(contact.FullName);
+
+            if (matches.Count > 0)
             {
-                foreach (var letter in alphabet.GetAlphabet)
+                foreach (Match match in matches)
                 {
-                    if (contact.FullName[i].Equals(letter))
-                    {
-                        str += contact.FullName[i];
-                    }
+                    str += match.Value;
                 }
             }
 
