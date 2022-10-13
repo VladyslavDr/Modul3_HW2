@@ -35,7 +35,10 @@ namespace Contacts
 
         public bool Add(IContact contact)
         {
-            string str = string.Empty;
+            if (CheckForContactInTheContactLog(contact))
+            {
+                return false;
+            }
 
             if (int.TryParse(contact.FullName[0].ToString(), out var res))
             {
@@ -44,59 +47,14 @@ namespace Contacts
                 return true;
             }
 
-            if (CultureInfo.CurrentUICulture.Name.Equals("en-US"))
-            {
-                for (int i = 0; i < contact.FullName.Length; i++)
-                {
-                    foreach (var letter in _alphabetUS.GetAlphabet)
-                    {
-                        if (contact.FullName[i].Equals(letter))
-                        {
-                            str += contact.FullName[i];
-                        }
-                    }
-                }
-
-                if (contact.FullName.Equals(str))
-                {
-                    Default.Add(contact);
-                    Default.Sort(new ContactFullNameComparer());
-                }
-                else
-                {
-                    Sharp.Add(contact);
-                    Sharp.Sort(new ContactFullNameComparer());
-                }
-
-                return true;
-            }
-
             if (CultureInfo.CurrentUICulture.Name.Equals("uk-UA"))
             {
-                for (int i = 0; i < contact.FullName.Length; i++)
-                {
-                    foreach (var letter in _alphabetUK.GetAlphabet)
-                    {
-                        if (contact.FullName[i].Equals(letter))
-                        {
-                            str += contact.FullName[i];
-                        }
-                    }
-                }
-
-                if (contact.FullName.Equals(str))
-                {
-                    Default.Add(contact);
-                    Default.Sort(new ContactFullNameComparer());
-                }
-                else
-                {
-                    Sharp.Add(contact);
-                    Sharp.Sort(new ContactFullNameComparer());
-                }
+                AddToAppropriateList(_alphabetUK, contact);
 
                 return true;
             }
+
+            AddToAppropriateList(_alphabetUS, contact);
 
             return true;
         }
@@ -133,6 +91,22 @@ namespace Contacts
             return false;
         }
 
+        public bool CheckForContactInTheContactLog(IContact contact)
+        {
+            foreach (var groups in Contacts)
+            {
+                foreach (var item in groups)
+                {
+                    if (item.PhoneNumber.Equals(contact.PhoneNumber))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public IEnumerator<IContact> GetEnumerator()
         {
             return GetGenericEnumerator();
@@ -143,14 +117,51 @@ namespace Contacts
             return GetGenericEnumerator();
         }
 
+        private void AddToAppropriateList(Alphabet alphabet, IContact contact)
+        {
+            string str = string.Empty;
+
+            for (int i = 0; i < contact.FullName.Length; i++)
+            {
+                foreach (var letter in alphabet.GetAlphabet)
+                {
+                    if (contact.FullName[i].Equals(letter))
+                    {
+                        str += contact.FullName[i];
+                    }
+                }
+            }
+
+            if (contact.FullName.Equals(str))
+            {
+                Default.Add(contact);
+                Default.Sort(new ContactFullNameComparer());
+            }
+            else
+            {
+                Sharp.Add(contact);
+                Sharp.Sort(new ContactFullNameComparer());
+            }
+        }
+
         private IEnumerator<IContact> GetGenericEnumerator()
         {
-            foreach (var contacts in Contacts)
+            Console.WriteLine("default:");
+            foreach (var contact in Default)
             {
-                foreach (var contact in contacts)
-                {
-                    yield return contact;
-                }
+                yield return contact;
+            }
+
+            Console.WriteLine("0-9:");
+            foreach (var contact in Digitals)
+            {
+                yield return contact;
+            }
+
+            Console.WriteLine("#:");
+            foreach (var contact in Sharp)
+            {
+                yield return contact;
             }
         }
     }
